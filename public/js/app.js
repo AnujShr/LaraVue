@@ -55179,13 +55179,13 @@ function () {
     }
   }, {
     key: "record",
-    value: function record(errors) {
-      this.errors = errors;
+    value: function record(field) {
+      this.errors = field.errors;
     }
   }, {
     key: "clear",
     value: function clear(field) {
-      delete this.errors[field];
+      if (field) delete this.errors[field];else this.errors = {};
     }
   }, {
     key: "has",
@@ -55208,7 +55208,7 @@ function () {
   function Form(data) {
     _classCallCheck(this, Form);
 
-    this.orignalData = data;
+    this.originalData = data;
 
     for (var field in data) {
       this[field] = data[field];
@@ -55218,11 +55218,37 @@ function () {
   }
 
   _createClass(Form, [{
+    key: "data",
+    value: function data() {
+      var data = Object.assign({}, this);
+      delete data.originalData;
+      delete data.errors;
+      return data;
+    }
+  }, {
     key: "reset",
     value: function reset() {
-      for (var field in this.orignalData) {
+      for (var field in this.originalData) {
         this[field] = '';
       }
+    }
+  }, {
+    key: "submit",
+    value: function submit(requestType, url) {
+      console.log(this.originalData);
+      axios[requestType](url, this.data()).then(this.onSuccess.bind(this)).catch(this.onFail.bind(this));
+    }
+  }, {
+    key: "onSuccess",
+    value: function onSuccess(response) {
+      alert(response.data.message);
+      this.errors.clear();
+      this.reset();
+    }
+  }, {
+    key: "onFail",
+    value: function onFail(error) {
+      this.errors.record(error.response.data);
     }
   }]);
 
@@ -55232,36 +55258,15 @@ function () {
 var app = new Vue({
   el: '#app',
   data: {
-    skills: [],
     form: new Form({
       name: '',
       description: ''
     })
   },
   methods: {
-    sumbitForm: function sumbitForm() {
-      var _this = this;
-
-      axios.post('project', this.$data.form).then(this.onSuccess).catch(function (error) {
-        return _this.form.errors.record(error.response.data.errors);
-      });
-    },
-    onSuccess: function onSuccess(response) {
-      alert(response.data.message);
-      form.reset();
+    onSubmit: function onSubmit() {
+      this.form.submit('post', 'project');
     }
-  },
-  mounted: function mounted() {
-    var _this2 = this;
-
-    axios.get('/skills').then(function (response) {
-      return _this2.skills = response.data;
-    });
-  },
-  created: function created() {
-    Event.$on('applied', function () {
-      alert('handling it!');
-    });
   }
 });
 
@@ -55320,13 +55325,12 @@ if (token) {
 
 
 
-window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
-window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
-  broadcaster: 'pusher',
-  key: "eb83d84697ca084dcc9c",
-  cluster: "ap1",
-  encrypted: true
-});
+window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js"); // window.Echo = new Echo({
+//     broadcaster: 'pusher',
+//     key: process.env.MIX_PUSHER_APP_KEY,
+//     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
+//     encrypted: true
+// });
 
 /***/ }),
 
@@ -55867,8 +55871,8 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /var/www/html/bluesky/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /var/www/html/bluesky/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\wamp64\www\LaraVue\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\wamp64\www\LaraVue\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

@@ -48,12 +48,13 @@ class Errors {
         }
     }
 
-    record(errors) {
-        this.errors = errors;
+    record(field) {
+        this.errors = field.errors;
     }
 
     clear(field) {
-        delete this.errors[field];
+        if (field) delete this.errors[field];
+        else this.errors = {};
     }
 
     has(field) {
@@ -67,55 +68,55 @@ class Errors {
 
 class Form {
     constructor(data) {
-        this.orignalData = data;
-
+        this.originalData = data;
         for (let field in data) {
             this[field] = data[field];
         }
-        this.errors = new Errors();
+        this.errors = new Errors()
+    }
+
+    data() {
+        let data = Object.assign({}, this);
+        delete data.originalData;
+        delete data.errors;
+        return data;
     }
 
     reset() {
-        for (let field in this.orignalData) {
-            this[field] = '';
+        for (let field in this.originalData) {
+            this[field] = ''
         }
     }
 
+    submit(requestType, url) {
+        console.log(this.originalData);
+        axios[requestType](url, this.data())
+            .then(this.onSuccess.bind(this))
+            .catch(this.onFail.bind(this))
+    }
 
+    onSuccess(response) {
+        alert(response.data.message);
+        this.errors.clear();
+        this.reset();
+    }
+
+    onFail(error) {
+        this.errors.record(error.response.data);
+    }
 }
 
 const app = new Vue({
-
-        el: '#app',
-
-        data: {
-            skills: [],
-            form: new Form({
-                name: '',
-                description: '',
-            }),
-        },
-        methods: {
-            sumbitForm() {
-                axios.post('project', this.$data.form)
-                    .then(this.onSuccess)
-                    .catch(error => this.form.errors.record(error.response.data.errors));
-
-            },
-            onSuccess(response) {
-                alert(response.data.message);
-                form.reset();
-            }
-        },
-        mounted() {
-            axios.get('/skills').then(response => this.skills = response.data);
-        },
-
-        created() {
-            Event.$on('applied', () => {
-                alert('handling it!');
-            });
+    el: '#app',
+    data: {
+        form: new Form({
+            name: '',
+            description: '',
+        })
+    },
+    methods: {
+        onSubmit() {
+            this.form.submit('post', 'project');
         }
-
-    })
-;
+    }
+});
