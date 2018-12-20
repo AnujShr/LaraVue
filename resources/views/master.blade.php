@@ -11,6 +11,9 @@
 </head>
 <body>
 <div id="app" class="container">
+    {{--@{{ coupon }}--}}
+    {{--<custom-input v-model="coupon"></custom-input>--}}
+
 
     <form style="margin-top:30px" @submit.prevent="onSubmit" @keydown="form.errors.clear($event.target.name)">
         {{csrf_field()}}
@@ -38,6 +41,7 @@
     </form>
 
 </div>
+
 <script src="{{asset('js/app.js')}}"></script>
 </body>
 </html>

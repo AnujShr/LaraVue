@@ -29,6 +29,7 @@ Vue.component('tab', require('./components/TabComponent').default);
 Vue.component('coupon', require('./components/CouponComponent.vue').default);
 Vue.component('modal-component', require('./components/ModalComponent').default);
 Vue.component('progress-view', require('./components/ProgressViewComponent').default);
+Vue.component('custom-input', require('./components/CustomInputComponent').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -45,14 +46,17 @@ window.Form = Form;
 const app = new Vue({
     el: '#app',
     data: {
+        coupon: 'FREEBIE',
+        name: 'John Doe',
         form: new Form({
             name: '',
             description: '',
-        })
+        }),
     },
-    methods: {
-        onSubmit() {
-            this.form.submit('post', 'project');
+    methods:
+        {
+            onSubmit() {
+                this.form.submit('post', 'project');
+            }
         }
-    }
 });
